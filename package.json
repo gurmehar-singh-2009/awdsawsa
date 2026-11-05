@@ -1,0 +1,24 @@
+{
+  "name": "brickfall",
+  "version": "1.0.0",
+  "description": "Serverless peer-to-peer brick-building battle game",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "assets": "blender -b --factory-startup --python tools/blender/build_assets.py"
+  },
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@dimforge/rapier3d-compat": "^0.21.0",
+    "trystero": "^0.26.0"
+  },
+  "devDependencies": {
+    "node-datachannel": "^0.33.6",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.6"
+  },
+  "private": true
+}

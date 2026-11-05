@@ -1,0 +1,137 @@
+:root {
+  --ink: #16181d;
+  --paper: #fdfbf5;
+  --red: #d62b26;
+  --blue: #2466db;
+  --yellow: #f5c518;
+  --green: #2f9e44;
+  --shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+  font-family: 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; height: 100%; overflow: hidden; background: #6fa3e8; color: #fff;
+  user-select: none; -webkit-user-select: none; touch-action: none; overscroll-behavior: none;
+}
+#stage { position: fixed; inset: 0; }
+#stage canvas { width: 100%; height: 100%; display: block; }
+.hidden { display: none !important; }
+
+/* ---------------------------------------------------------- panels */
+.panel-screen {
+  position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(ellipse at 50% 30%, rgba(61, 120, 219, 0.55), rgba(10, 20, 45, 0.82));
+  z-index: 20; padding: 16px; overflow: auto;
+}
+#menu {
+  background:
+    linear-gradient(rgba(20, 40, 90, 0.35), rgba(10, 20, 45, 0.8)),
+    url('/preview.png') center / cover, #3d78db;
+}
+.panel {
+  width: min(560px, 100%); background: var(--paper); color: var(--ink); border-radius: 14px;
+  padding: 22px 24px; box-shadow: 0 8px 0 #0b1a3a, 0 20px 50px rgba(0, 0, 0, 0.4); border: 3px solid var(--ink);
+}
+.panel.small { width: min(420px, 100%); }
+.panel h2 { margin: 0 0 10px; }
+.logo { margin: 0; font-size: 56px; letter-spacing: -1px; line-height: 1; font-weight: 900; color: var(--ink); }
+.logo span { color: var(--red); }
+.logo small { display: inline-block; margin-left: 10px; font-size: 18px; vertical-align: middle; background: var(--yellow);
+  padding: 4px 10px; border-radius: 6px; border: 2px solid var(--ink); transform: rotate(-4deg); letter-spacing: 1px; text-transform: uppercase; }
+.tag { margin: 10px 0 16px; color: #444; }
+label { display: block; font-weight: 700; margin: 8px 0; font-size: 14px; }
+label input:not([type=checkbox]), label select { display: block; width: 100%; margin-top: 4px; }
+label.check { display: flex; gap: 8px; align-items: center; }
+input, select, button { font: inherit; }
+input:not([type=range]):not([type=checkbox]), select {
+  padding: 9px 11px; border-radius: 8px; border: 2px solid var(--ink); background: #fff; color: var(--ink);
+}
+button {
+  padding: 9px 14px; border-radius: 8px; border: 2px solid var(--ink); background: var(--blue); color: #fff; font-weight: 800;
+  cursor: pointer; box-shadow: 0 3px 0 var(--ink); transition: transform 0.06s; white-space: nowrap;
+}
+button:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+button.big { background: var(--red); font-size: 20px; padding: 12px 18px; flex: 1; }
+button.alt { background: #e8e4d8; color: var(--ink); }
+.row { display: flex; gap: 8px; margin: 10px 0; flex-wrap: wrap; }
+.row input { flex: 1; min-width: 120px; }
+details { margin-top: 10px; border-top: 2px dashed #ccc; padding-top: 8px; }
+summary { cursor: pointer; font-weight: 800; }
+.settings { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+.help table { width: 100%; font-size: 14px; border-collapse: collapse; }
+.help td { padding: 3px 4px; }
+.help td:nth-child(odd) { font-weight: 800; white-space: nowrap; }
+.foot { font-size: 12px; color: #777; margin: 12px 0 0; }
+#team-list button { display: flex; justify-content: space-between; width: 100%; margin: 6px 0; }
+#team-list button[disabled] { opacity: 0.45; cursor: not-allowed; }
+
+#loading { flex-direction: column; }
+.spinner { width: 46px; height: 46px; border: 6px solid rgba(255, 255, 255, 0.3); border-top-color: var(--yellow); border-radius: 8px; animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------------------------------------------------------- HUD */
+#hud { position: fixed; inset: 0; pointer-events: none; z-index: 10; text-shadow: 0 2px 0 rgba(0, 0, 0, 0.45); }
+#crosshair { position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; transform: translate(-50%, -50%); }
+#crosshair i { position: absolute; background: #fff; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6); }
+#crosshair i:nth-child(1) { left: 10px; top: 0; width: 2px; height: 7px; }
+#crosshair i:nth-child(2) { left: 10px; bottom: 0; width: 2px; height: 7px; }
+#crosshair i:nth-child(3) { top: 10px; left: 0; width: 7px; height: 2px; }
+#crosshair i:nth-child(4) { top: 10px; right: 0; width: 7px; height: 2px; }
+#crosshair.hit i { background: #ff4b3e; }
+#bottom { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; }
+#health { width: 280px; height: 22px; border: 3px solid var(--ink); background: #3b1414; border-radius: 6px; position: relative; overflow: hidden; }
+#health-fill { position: absolute; inset: 0; background: linear-gradient(#5fe36b, #2f9e44); transform-origin: left; transition: transform 0.15s; }
+#health-text { position: absolute; inset: 0; text-align: center; font-weight: 900; font-size: 15px; line-height: 16px; }
+#toolbar { display: flex; gap: 6px; pointer-events: auto; }
+.slot {
+  width: 74px; height: 58px; border: 3px solid var(--ink); border-radius: 8px; background: rgba(20, 24, 33, 0.7);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; position: relative; cursor: pointer;
+}
+.slot b { position: absolute; left: 5px; top: 2px; font-size: 12px; opacity: 0.8; }
+.slot.on { background: var(--yellow); color: var(--ink); text-shadow: none; transform: translateY(-4px); }
+.slot .cd { position: absolute; left: 0; bottom: 0; height: 4px; background: #fff; }
+#teams { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+.team-chip { display: flex; align-items: center; gap: 6px; padding: 4px 10px 4px 6px; border-radius: 8px; border: 3px solid var(--ink); font-weight: 900; font-size: 14px; }
+.team-chip .core { width: 14px; height: 14px; transform: rotate(45deg); background: #fff; border: 2px solid var(--ink); }
+.team-chip.lost .core { background: transparent; border-style: dashed; }
+.team-chip.out { opacity: 0.45; }
+.team-chip.me { outline: 3px solid #fff; }
+#feed { position: absolute; top: 10px; right: 12px; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; font-weight: 800; font-size: 14px; }
+#feed div { background: rgba(10, 14, 22, 0.55); padding: 3px 8px; border-radius: 6px; animation: fade 6s forwards; }
+@keyframes fade { 0%, 80% { opacity: 1; } 100% { opacity: 0; } }
+#banner { position: absolute; top: 26%; width: 100%; text-align: center; font-size: 46px; font-weight: 900; letter-spacing: 1px; }
+#sub-banner { position: absolute; top: calc(26% + 58px); width: 100%; text-align: center; font-size: 20px; font-weight: 800; }
+#net { position: absolute; left: 10px; top: 10px; font-size: 12px; font-weight: 700; opacity: 0.9; white-space: pre; line-height: 1.35; }
+#chat { position: absolute; left: 10px; bottom: 90px; width: min(420px, 60vw); }
+#chat-log div { font-size: 14px; font-weight: 700; margin: 2px 0; animation: fade 12s forwards; }
+#chat-log div.sys { color: var(--yellow); }
+#chat-input { display: none; width: 100%; pointer-events: auto; margin-top: 4px; }
+#chat.open #chat-input { display: block; }
+#chat.open #chat-log div { animation: none; opacity: 1; }
+#scoreboard { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background: rgba(10, 14, 22, 0.85); padding: 14px 18px;
+  border-radius: 12px; border: 3px solid var(--ink); min-width: 360px; }
+#scoreboard table { width: 100%; border-collapse: collapse; font-weight: 700; }
+#scoreboard td, #scoreboard th { padding: 4px 8px; text-align: left; }
+#scoreboard td:nth-child(n+2), #scoreboard th:nth-child(n+2) { text-align: right; }
+#click-to-play { position: absolute; top: 60%; width: 100%; text-align: center; font-size: 22px; font-weight: 900; }
+#names div { position: absolute; transform: translate(-50%, -100%); font-weight: 800; font-size: 14px; white-space: nowrap; text-align: center; }
+#names div i { display: block; height: 4px; margin: 2px auto 0; width: 44px; background: #3b1414; border: 1px solid #000; }
+#names div i b { display: block; height: 100%; background: #5fe36b; }
+
+/* ---------------------------------------------------------- touch */
+#joy, #touch-buttons { display: none; }
+body.touch #joy { position: absolute; width: 120px; height: 120px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, 0.5); display: none; }
+#joy-knob { position: absolute; left: 35px; top: 35px; width: 50px; height: 50px; border-radius: 50%; background: rgba(255, 255, 255, 0.6); }
+body.touch #touch-buttons { display: flex; position: absolute; right: 14px; bottom: 100px; flex-direction: column; gap: 12px; pointer-events: auto; }
+body.touch #touch-buttons button { width: 70px; height: 70px; border-radius: 50%; font-size: 26px; opacity: 0.85; }
+body.touch #btn-menu { width: 48px !important; height: 48px !important; font-size: 18px !important; align-self: flex-end; }
+body.touch #crosshair { display: block; }
+body.touch .slot { width: 56px; height: 46px; font-size: 11px; }
+body.touch #health { width: 200px; }
+
+@media (max-width: 640px) {
+  .logo { font-size: 40px; }
+  .settings { grid-template-columns: 1fr; }
+  #teams { top: 40px; }
+  .team-chip { font-size: 12px; }
+}

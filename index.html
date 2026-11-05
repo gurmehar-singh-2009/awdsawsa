@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#3d78db" />
+    <meta name="color-scheme" content="only light" />
+    <title>Brickfall: Skyhold</title>
+    <meta name="description" content="Build, blast and topple brick castles with friends. Serverless peer-to-peer multiplayer in your browser." />
+    <meta property="og:title" content="Brickfall: Skyhold" />
+    <meta property="og:description" content="Peer-to-peer brick battle in the browser. No servers, no installs." />
+    <meta property="og:image" content="preview.png" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='10' width='28' height='16' rx='2' fill='%23d62b26'/%3E%3Crect x='6' y='5' width='7' height='6' rx='2' fill='%23d62b26'/%3E%3Crect x='19' y='5' width='7' height='6' rx='2' fill='%23d62b26'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <div id="hud" class="hidden">
+      <div id="names"></div>
+      <div id="crosshair"><i></i><i></i><i></i><i></i></div>
+      <div id="teams"></div>
+      <div id="feed"></div>
+      <div id="banner"></div>
+      <div id="sub-banner"></div>
+      <div id="net"></div>
+      <div id="bottom">
+        <div id="health"><div id="health-fill"></div><span id="health-text">100</span></div>
+        <div id="toolbar"></div>
+      </div>
+      <div id="chat"><div id="chat-log"></div><input id="chat-input" maxlength="120" placeholder="Say something… (Enter to send, Esc to cancel)" autocomplete="off" /></div>
+      <div id="scoreboard" class="hidden"></div>
+      <div id="click-to-play" class="hidden">Click to play</div>
+      <div id="joy"><div id="joy-knob"></div></div>
+      <div id="touch-buttons">
+        <button id="btn-fire">●</button>
+        <button id="btn-jump">▲</button>
+        <button id="btn-menu">☰</button>
+      </div>
+    </div>
+
+    <div id="menu" class="panel-screen">
+      <div class="panel">
+        <h1 class="logo"><span>Brick</span>fall<small>Skyhold</small></h1>
+        <p class="tag">Build, blast and topple brick castles. Peer-to-peer in your browser: no servers, no installs.</p>
+        <label>Your name<input id="name" maxlength="16" autocomplete="off" /></label>
+        <div class="row">
+          <button id="quick" class="big">Quick play</button>
+        </div>
+        <div class="row">
+          <input id="room" maxlength="24" placeholder="room code" autocomplete="off" />
+          <button id="join">Join room</button>
+          <button id="create" class="alt">New private room</button>
+        </div>
+        <details id="settings-block">
+          <summary>Settings</summary>
+          <div class="settings">
+            <label>Renderer
+              <select id="opt-renderer">
+                <option value="auto">Auto</option>
+                <option value="webgl">GPU (WebGL)</option>
+                <option value="cpu">CPU (software)</option>
+              </select>
+            </label>
+            <label>Quality
+              <select id="opt-quality">
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </label>
+            <label class="check"><input type="checkbox" id="opt-dynres" /> Dynamic resolution</label>
+            <label class="check"><input type="checkbox" id="opt-fps" /> Show FPS</label>
+            <label>Volume <input type="range" id="opt-volume" min="0" max="1" step="0.05" /></label>
+            <label>Mouse sensitivity <input type="range" id="opt-sens" min="0.0008" max="0.006" step="0.0002" /></label>
+          </div>
+        </details>
+        <details>
+          <summary>How to play</summary>
+          <div class="help">
+            <p>Four teams, four sky islands. Each team's <b>Core</b> sits on top of its tower. Knock an enemy Core off its tower (or bring the whole tower down) and that team can no longer respawn. Last team standing wins the round.</p>
+            <table>
+              <tr><td>WASD</td><td>move</td><td>Space</td><td>jump</td></tr>
+              <tr><td>Mouse</td><td>aim</td><td>Click</td><td>use tool</td></tr>
+              <tr><td>1-5</td><td>switch tool</td><td>Wheel / I O</td><td>zoom</td></tr>
+              <tr><td>T</td><td>change team</td><td>Tab</td><td>scoreboard</td></tr>
+              <tr><td>Enter</td><td>chat</td><td>Esc</td><td>menu</td></tr>
+            </table>
+          </div>
+        </details>
+        <p class="foot" id="menu-foot"></p>
+      </div>
+    </div>
+
+    <div id="pause" class="panel-screen hidden">
+      <div class="panel small">
+        <h2>Paused</h2>
+        <p id="pause-room"></p>
+        <div class="row"><button id="resume" class="big">Resume</button></div>
+        <div class="row"><button id="copy-link">Copy invite link</button><button id="team-btn">Change team</button></div>
+        <div id="pause-settings"></div>
+        <div class="row"><button id="leave" class="alt">Leave room</button></div>
+      </div>
+    </div>
+
+    <div id="team-pick" class="panel-screen hidden">
+      <div class="panel small">
+        <h2>Pick a team</h2>
+        <div id="team-list"></div>
+        <div class="row"><button id="team-cancel" class="alt">Cancel</button></div>
+      </div>
+    </div>
+
+    <div id="loading" class="panel-screen hidden"><div class="spinner"></div><p id="loading-text">Loading…</p></div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
